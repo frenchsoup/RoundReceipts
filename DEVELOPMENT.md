@@ -8,17 +8,28 @@ Round Receipts consists of two main applications:
 
 ## Quick Start
 
-### Option 1: Manual Setup
+### Prerequisites
+- PostgreSQL 13+ must be running (or use Docker)
+- Node.js 18+
+
+### Option 1: Manual Setup (Recommended for Active Development)
+
+**Step 1: Start PostgreSQL (if not already running)**
+```bash
+# Using Docker
+docker-compose up -d db
+
+# OR ensure local PostgreSQL is running on port 5432
+```
 
 **Backend:**
 ```bash
 cd backend
 npm install
-cp .env.example .env
-# Update .env with your database credentials
-npm run db:setup
-npm run db:seed
-npm run dev
+cp .env.example .env              # Create .env file from template
+npm run db:setup                  # Create database tables
+npm run db:seed                   # Load sample golf courses
+npm run dev                       # Start backend server
 ```
 
 **Frontend (in another terminal):**
@@ -27,6 +38,8 @@ cd frontend
 npm install
 npm run dev
 ```
+
+Then open http://localhost:3000 in your browser.
 
 ### Option 2: Automated Setup
 

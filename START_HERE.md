@@ -55,29 +55,50 @@ I've built a **complete, production-ready golf scorekeeping app** based on your 
 
 ## 🚀 How to Get Started
 
-### Option 1: Automatic Setup (Recommended)
+### Option 1: Docker (Easiest - Recommended)
+```bash
+docker-compose up -d
+```
+**That's it!** Everything runs automatically. Open http://localhost:3000 in your browser.
+
+### Option 2: Manual Setup (For Active Development)
+
+**Step 1: Start PostgreSQL**
+```bash
+# Using Docker (easiest if you have Docker installed)
+docker-compose up -d db
+
+# OR if you have PostgreSQL installed locally, just make sure it's running
+```
+
+**Step 2: Backend Setup (Terminal 1)**
+```bash
+cd backend
+npm install
+cp .env.example .env    # Create .env file
+npm run db:setup        # Create database tables
+npm run db:seed         # Load sample courses
+npm run dev             # Start backend
+```
+
+**Step 3: Frontend Setup (Terminal 2)**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+**Step 4: Open in Browser**
+Navigate to **http://localhost:3000**
+
+### Option 3: Using Setup Script
 ```bash
 bash setup.sh
 cd backend && npm run dev    # Terminal 1
 cd frontend && npm run dev   # Terminal 2
 ```
 
-### Option 2: Manual Setup
-```bash
-# Backend
-cd backend && npm install && npm run db:setup && npm run dev
-
-# Frontend (in another terminal)
-cd frontend && npm install && npm run dev
-```
-
-### Option 3: Docker (No Local Setup)
-```bash
-docker-compose up -d
-# Everything runs automatically
-```
-
-Then open **http://localhost:3000** and start using the app!
+⚠️ **Important:** The setup script assumes PostgreSQL is running. Use Option 1 (Docker) if you're unsure.
 
 ---
 

@@ -87,17 +87,22 @@ export async function updateRivalry(
 export async function getUserRivalries(userId: string) {
   const result = await pool.query(
     `SELECT 
-       id, 
-       CASE WHEN user_id_1 = $1 THEN user_id_2 ELSE user_id_1 END as "rivalId",
-       CASE WHEN user_id_1 = $1 THEN wins_user_1 ELSE wins_user_2 END as "myWins",
-       CASE WHEN user_id_1 = $1 THEN wins_user_2 ELSE wins_user_1 END as "rivalWins",
-       ties,
-       rounds_played as "roundsPlayed",
-       last_round_date as "lastRoundDate",
-       last_winner_id as "lastWinnerId"
-     FROM rivalries
-     WHERE user_id_1 = $1 OR user_id_2 = $1
-     ORDER BY rounds_played DESC`,
+       r.id, 
+       CASE WHEN r.user_id_1 = $1 THEN r.user_id_2 ELSE r.user_id_1 END as "rivalId",
+       CASE WHEN r.user_id_1 = $1 THEN u2.username ELSE u1.username END as "rivalUsername",
+       CASE WHEN r.user_id_1 = $1 THEN u2.first_name ELSE u1.first_name END as "rivalFirstName",
+       CASE WHEN r.user_id_1 = $1 THEN u2.last_name ELSE u1.last_name END as "rivalLastName",
+       CASE WHEN r.user_id_1 = $1 THEN r.wins_user_1 ELSE r.wins_user_2 END as "myWins",
+       CASE WHEN r.user_id_1 = $1 THEN r.wins_user_2 ELSE r.wins_user_1 END as "rivalWins",
+       r.ties,
+       r.rounds_played as "roundsPlayed",
+       r.last_round_date as "lastRoundDate",
+       r.last_winner_id as "lastWinnerId"
+     FROM rivalries r
+     JOIN users u1 ON r.user_id_1 = u1.id
+     JOIN users u2 ON r.user_id_2 = u2.id
+     WHERE r.user_id_1 = $1 OR r.user_id_2 = $1
+     ORDER BY r.rounds_played DESC`,
     [userId]
   );
 
@@ -107,35 +112,25 @@ export async function getUserRivalries(userId: string) {
 export async function getCareerStats(userId: string): Promise<CareerStats> {
   const result = await pool.query(
     `SELECT 
-       COUNT(DISTINCT CASE WHEN winner_id = $1 THEN round_id END) as wins,
-       COUNT(DISTINCT CASE WHEN loser_id = $1 THEN round_id END) as losses,
-       COUNT(DISTINCT CASE WHEN is_tie = true THEN round_id END) as ties
-     FROM (
-       SELECT 
-         r.id as round_id,
-         CASE WHEN s1.score < s2.score THEN u1.id ELSE u2.id END as winner_id,
-         CASE WHEN s1.score > s2.score THEN u1.id ELSE u2.id END as loser_id,
-         s1.score = s2.score as is_tie,
-         s1.score as score1,
-         s2.score as score2
-       FROM rounds r
-       JOIN round_participants rp1 ON r.id = rp1.round_id
-       JOIN round_participants rp2 ON r.id = rp2.round_id AND rp1.id < rp2.id
-       JOIN users u1 ON rp1.user_id = u1.id
-       JOIN users u2 ON rp2.user_id = u2.id
-     ) scores
-     WHERE winner_id = $1 OR loser_id = $1 OR is_tie = true`,
+       COALESCE(SUM(CASE WHEN user_id_1 = $1 THEN wins_user_1 ELSE wins_user_2 END), 0) as wins,
+       COALESCE(SUM(CASE WHEN user_id_1 = $1 THEN wins_user_2 ELSE wins_user_1 END), 0) as losses,
+       COALESCE(SUM(ties), 0) as ties
+     FROM rivalries
+     WHERE user_id_1 = $1 OR user_id_2 = $1`,
     [userId]
   );
 
   const stats = result.rows[0] || { wins: 0, losses: 0, ties: 0 };
-  const total = parseInt(stats.wins) + parseInt(stats.losses) + parseInt(stats.ties);
+  const wins = parseInt(stats.wins);
+  const losses = parseInt(stats.losses);
+  const ties = parseInt(stats.ties);
+  const total = wins + losses + ties;
 
   return {
     roundsPlayed: total,
-    wins: parseInt(stats.wins),
-    losses: parseInt(stats.losses),
-    ties: parseInt(stats.ties),
-    winPercentage: total > 0 ? (parseInt(stats.wins) / total) * 100 : 0,
+    wins,
+    losses,
+    ties,
+    winPercentage: total > 0 ? (wins / total) * 100 : 0,
   };
 }

@@ -53,71 +53,71 @@ RoundReceipts/
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL 13+
+- Docker (for PostgreSQL) OR PostgreSQL 13+ running locally
 - npm or yarn
 
-### Backend Setup
+### Quick Start (Recommended)
 
-1. Navigate to the backend directory:
+**1. Start PostgreSQL (if not already running)**
+```bash
+# Using Docker (easiest)
+docker-compose up -d db
+
+# OR ensure local PostgreSQL is running on port 5432
+```
+
+**2. Backend Setup**
 ```bash
 cd backend
-```
-
-2. Install dependencies:
-```bash
 npm install
+cp .env.example .env           # .env is now configured for localhost PostgreSQL
+npm run db:setup               # Creates all database tables
+npm run db:seed                # Loads 4 sample golf courses
+npm run dev                    # Starts server on port 5000
 ```
 
-3. Create `.env` file from example:
+**3. Frontend Setup (in a new terminal)**
 ```bash
-cp .env.example .env
+cd frontend
+npm install
+npm run dev                    # Starts on port 3000
 ```
 
-4. Update `.env` with your database credentials:
+**4. Open in Browser**
+Navigate to **http://localhost:3000**
+
+### Default Database Credentials
+
+When you create `.env` from `.env.example`, it uses:
 ```
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=round_receipts
 DB_USER=postgres
-DB_PASSWORD=your_password
-JWT_SECRET=your-secret-key-change-this
+DB_PASSWORD=postgres
 ```
 
-5. Set up the database:
-```bash
-npm run db:setup
-```
-
-6. Seed sample courses:
-```bash
-npm run db:seed
-```
-
-7. Start the development server:
-```bash
-npm run dev
-```
+These are pre-configured in the template and work with both Docker and local PostgreSQL installations.
 
 The API will be available at `http://localhost:5000`
 
-### Frontend Setup
+---
 
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-```
+## Troubleshooting
 
-2. Install dependencies:
-```bash
-npm install
-```
+**"Unable to create account" or database errors?**
+- Make sure PostgreSQL is running: `docker-compose up -d db`
+- Make sure backend `.env` file exists: `cp backend/.env.example backend/.env`
+- Make sure database is set up: `cd backend && npm run db:setup`
 
-3. Start the development server:
-```bash
-npm run dev
-```
+**Port 5000 or 3000 already in use?**
+- Change the port in `.env` or kill the process using the port
 
-The app will be available at `http://localhost:3000`
+**Frontend can't connect to backend?**
+- Make sure backend is running: `cd backend && npm run dev`
+- Check that the API URL in frontend `.env` is correct
+
+---
 
 ## API Endpoints
 

@@ -73,8 +73,8 @@ export default function DashboardPage() {
             {rivalries.slice(0, 5).map((rivalry) => (
               <div key={rivalry.id} className="card flex items-center justify-between">
                 <div>
-                  <div className="font-semibold text-gray-900">vs. {rivalry.rivalId}</div>
-                  <div className="text-sm text-gray-600">{rivalry.roundsPlayed} rounds played</div>
+                  <div className="font-semibold text-gray-900">vs. {rivalry.rivalFirstName} {rivalry.rivalLastName}</div>
+                  <div className="text-sm text-gray-600">{rivalry.roundsPlayed} rounds • {rivalry.myWins}-{rivalry.rivalWins}</div>
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold">

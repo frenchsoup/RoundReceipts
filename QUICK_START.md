@@ -4,57 +4,65 @@ Get the app running in 5 minutes!
 
 ## Prerequisites
 - Node.js 18+
-- PostgreSQL running locally
+- Docker (for database) OR PostgreSQL 13+ running locally
 - npm or yarn
 
-## Option 1: Quick Start (Recommended)
+## ⚡ Quick Start (Recommended)
 
-### 1. Backend Setup (Terminal 1)
+### 1. Start the Database
+```bash
+# Using Docker (easiest)
+docker-compose up -d db
+
+# OR if PostgreSQL is installed locally, just make sure it's running on port 5432
+```
+
+### 2. Backend Setup (Terminal 1)
 ```bash
 cd backend
 npm install
-cp .env.example .env
-npm run db:setup
-npm run db:seed
-npm run dev
+cp .env.example .env           # Creates .env from template
+npm run db:setup               # Creates all database tables
+npm run db:seed                # Loads sample golf courses
+npm run dev                    # Starts backend on port 5000
 ```
 
-You should see: `Round Receipts API running on port 5000`
+You should see: ✅ `Round Receipts API running on port 5000`
 
-### 2. Frontend Setup (Terminal 2)
+### 3. Frontend Setup (Terminal 2)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-You should see: `Local: http://localhost:3000`
+You should see: ✅ `Local: http://localhost:3000`
 
-### 3. Open in Browser
+### 4. Open in Browser
 Navigate to **http://localhost:3000**
 
 ---
 
-## Option 2: Automated Setup
+## Alternative: Full Docker Setup
 
 ```bash
-# One-time setup
+docker-compose up -d
+```
+
+Everything runs automatically. Access at http://localhost:3000
+
+---
+
+## Alternative: Setup Script
+
+```bash
+# One-time setup (requires database running first)
 bash setup.sh
 
 # Then start both servers (in separate terminals)
 cd backend && npm run dev
 cd frontend && npm run dev
 ```
-
----
-
-## Option 3: Docker (No Local Setup)
-
-```bash
-docker-compose up -d
-```
-
-Access at http://localhost:3000
 
 ---
 

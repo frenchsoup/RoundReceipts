@@ -58,6 +58,9 @@ export interface SideGame {
 export interface Rivalry {
   id: string;
   rivalId: string;
+  rivalUsername: string;
+  rivalFirstName: string;
+  rivalLastName: string;
   myWins: number;
   rivalWins: number;
   ties: number;
